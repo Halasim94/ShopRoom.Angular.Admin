@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="row">
+        <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <a (click)="openEditor('category')"  class="btn btn-secondary">Termékcsoport hozzáadása</a>
+                            <a (click)="openEditor('type')" class="btn btn-secondary">Terméktípus hozzáadása</a>
+                            <a (click)="openEditor('subtype')" class="btn btn-secondary">Termék altípus hozzáadása</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <ul class="list-group categoryContainer">
+                            <li *ngFor="let item of items" (click)="selectCategory($event, item)" class="list-group-item d-flex justify-content-between align-items-center"> 
+                                <span *ngIf="item.menu && item.menu.type === 'megamenu'">
+                                    {{item.label}} - {{item.menu.type}} - {{item.menu.size}}
+                                    <span class="badge badge-primary badge-pill">{{item.menu.columns.length}}</span>
+                                </span>
+                                <span *ngIf="item.menu && item.menu.type === 'menu'" (click)="selectCategory($event, item)">
+                                    {{item.label}} - {{item.menu.type}}
+                                    <span class="badge badge-primary badge-pill"> {{item.menu.items.length}}</span>
+                                </span>
+                                <span *ngIf="!item.menu">
+                                    {{item.label}} - link
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <ul class="list-group" *ngFor="let item of megaMenuColumns">
+                            <li *ngFor="let sub of item.items" (click)="selectMegaMenu($event, item)" class="list-group-item d-flex justify-content-between align-items-center"> 
+                                {{sub.label}}
+                                <span *ngIf="sub.items && sub.items.length > 0" class="badge badge-primary badge-pill"> {{sub.items.length}}</span>
+                            </li>
+                        </ul>
+                        <ul class="list-group" *ngFor="let item of nestedLinks">
+                            <li *ngFor="let sub of item.items" (click)="selectMegaMenu($event, item)" class="list-group-item d-flex justify-content-between align-items-center"> 
+                                {{sub.label}}
+                                <span *ngIf="sub.items && sub.items.length > 0" class="badge badge-primary badge-pill"> {{sub.items.length}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+        
+                    </div>         
+                </div>
+            </div>
+        </div>    
+</div> 
+        

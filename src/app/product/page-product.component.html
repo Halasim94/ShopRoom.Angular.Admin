@@ -1,0 +1,19 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item font-dark" *ngFor="let link of links" routerLinkActive="active">
+                            <a class="nav-link font-dark" [routerLink]="link.url">
+                                {{ link.label }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <router-outlet style="width: 100%;"></router-outlet>
+    </div>
+  </div>
+  

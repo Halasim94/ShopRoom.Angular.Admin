@@ -1,3 +1,8 @@
 .float-right{
     float: right !important;
 }
+
+.icon-btn{
+    cursor: pointer;
+}
+

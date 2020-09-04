@@ -1,0 +1,238 @@
+<form [formGroup]="productService.newProduct" autocomplete="on" (submit)="onSubmit()" (keydown.enter)="$event.preventDefault()">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group" id="list-tab" role="tablist">
+                <a class="list-group-item list-group-item-action active" 
+                    id="list-base-list" data-toggle="list" href="#list-base" 
+                    role="tab" aria-controls="base">
+                    Termék alapadatok
+                </a>
+                <a class="list-group-item list-group-item-action" id="list-images-list" data-toggle="list" href="#list-images" role="tab" aria-controls="images">
+                    Termék képek
+                </a>
+                <a class="list-group-item list-group-item-action" id="list-description-list" data-toggle="list" href="#list-description" role="tab" aria-controls="description">
+                    Termék leírás
+                </a>
+                <a class="list-group-item list-group-item-action" id="list-category-list" data-toggle="list" href="#list-category" role="tab" aria-controls="category">
+                    Kategória
+                </a>
+                <a class="list-group-item list-group-item-action" id="list-priceandstock-list" data-toggle="list" href="#list-priceandstock" role="tab" aria-controls="priceandstock">
+                    Termék árazás / Raktár adatok
+                </a>
+                <a class="list-group-item list-group-item-action" (click)="logForm()" > 
+                    Mentés  <i class="flaot-right btn-icon material-icons">save</i>
+                </a>
+                <button type="submit" class="list-group-item list-group-item-action"> 
+                    Mentés  <i class="flaot-right btn-icon material-icons">save</i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="list-base" 
+                        role="tabpanel" aria-labelledby="list-base-list">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <h4>Termék alapadatok</h4>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Termék belső azonosítója</span>
+                                </div>
+                                <input formControlName="InnerId" type="text" class="form-control" 
+                                placeholder="Termék belső azonosítója" aria-label="ProductInnerId" 
+                                aria-describedby="basic-addon1" >
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Gyártási szám</span>
+                                </div>
+                                <input formControlName="ConstructionNumber" type="text" class="form-control" 
+                                placeholder="Termék belső azonosítója" aria-label="ProductConstructionNumber" 
+                                aria-describedby="basic-addon1" >
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Termék megnevezése</span>
+                                </div>
+                                <input formControlName="Name" type="text" class="form-control" 
+                                (keyup)="setSlug($event)" (change)="setSlug($event)"
+                                placeholder="Termék megnevezése" aria-label="ProductName" 
+                                aria-describedby="basic-addon1" >
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Keresőbarát név</span>
+                                </div>
+                                <input formControlName="Slug" type="text" 
+                                class="form-control" placeholder="slug" disabled aria-label="Slug" 
+                                aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Márka</span>
+                                </div>
+                                <input formControlName="Brand" type="search" class="form-control" id="search-input" 
+                                placeholder="Márka keresése Search...">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group mb-3">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                        <input formControlName="IsAvailable" type="checkbox" aria-label="Checkbox for following text input">
+                                        </div>
+                                    </div>
+                                    <input disabled type="text" class="form-control" placeholder="Feltöltés után termék elérhető?" aria-label="Feltöltés után termék elérhető?">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="list-images" role="tabpanel" aria-labelledby="list-images-list">
+                    <div class="form-group col-md-12">
+                        <h4>Kép feltöltés</h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;">
+                            <button type="button" class="btn btn-success" (click)="file.click()">Kép feltöltése</button>
+                        </div>
+                        <div class="col-md-4">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Feltöltött képek
+                                <span class="badge badge-primary badge-pill">{{newProductImages.length}}</span>
+                            </li>
+                        </div>
+                        <div class="col-md-4">
+                            <li *ngIf="progress > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                                Feltöltés állapota
+                                <span class="badge badge-primary badge-pill">{{progress}}%</span>
+                            </li>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <!-- Gallery -->
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-6" 
+                                    *ngFor="let newProductImage of newProductImages" 
+                                    [ngClass]="{primaryImage: newProductImage.Primary}"
+                                    data-toggle="modal" data-target="#modal">
+                                    <div class="icon-row">
+                                        <i *ngIf="!newProductImage.Primary" class="btn-icon icon-yellow material-icons" (click)="setToPrimaryImage(newProductImage.SelfId)">push_pin</i>
+                                        <i class="btn-icon icon-red material-icons" (click)="deleteImage(newProductImage.SelfId)">delete_forever</i>
+                                    </div>
+                                    <a href="#lightbox" data-slide-to="0">
+                                        <img src="{{baseUrl+newProductImage.ImageUrl}}" class="img-thumbnail my-3"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="list-description" role="tabpanel" aria-labelledby="list-description-list">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <h4>Termék Leírás</h4>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div id="quill">
+                                <h5>Rövid leírás</h5>
+                                <quill-editor [styles]="editorStyleShort" placeholder="Enter Text" [modules]="config"
+                                    formControlName="ShortDescription" required>
+                                </quill-editor>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div id="quill">
+                                <h5>Termék teljes leírás</h5>
+                                <quill-editor [styles]="editorStyleLong" placeholder="Enter Text" [modules]="config"
+                                    formControlName="LongDescription" required>
+                                </quill-editor>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+                <div class="tab-pane fade" id="list-category" role="tabpanel" aria-labelledby="list-category-list">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <h4>Kategória</h4>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="brandSelector">
+                              <option>Teszt</option>
+                              <option>Teszt1</option>
+                              <option>Teszt2</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="list-priceandstock" role="tabpanel" aria-labelledby="list-priceandstock-list">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <h4>Díjszabás</h4>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">HUF</span>
+                                </div>
+                                <input formControlName="Price"  type="text" class="form-control" placeholder="Ár" aria-label="Price" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">-%</span>
+                                </div>
+                                <input type="number" 
+                                (keyup)="setComparePrice($event)" (change)="setComparePrice($event)"
+                                class="form-control" placeholder="Kedvezmény %" aria-label="Price" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">HUF</span>
+                                </div>
+                                <input formControlName="CompareAtPrice" type="text" class="form-control" disabled placeholder="Kedvezményes ár" aria-label="Price" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <h4>Kiszerelés / Raktár</h4>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <select class="form-control" id="sizeSelector" (change)="onSizeChange($event.target.value)">
+                              <option>db</option>
+                              <option>csomag</option>
+                              <option>liter</option>
+                              <option>kg</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">{{sizeName}}</span>
+                                </div>
+                                <input type="number" 
+                                class="form-control" placeholder="készletérték" aria-label="Price" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

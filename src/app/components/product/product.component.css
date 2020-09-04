@@ -1,0 +1,33 @@
+
+.flaot-right{
+    float: right;
+}
+
+.btn-icon{
+    cursor: pointer;
+    size: 22px;
+    font-size: 30px;
+}
+
+.tools-row{
+    background-color: yellowgreen;
+}
+
+.icon-row{
+    position: absolute;
+    right: 24px;
+    top: 21px;
+    background-color: rgba(210,210,210,0.6);
+}
+
+.icon-red{
+    color:red;
+}
+
+.icon-yellow{
+    color:yellow;
+}
+
+.primaryImage{
+    border: 1px solid red;
+}

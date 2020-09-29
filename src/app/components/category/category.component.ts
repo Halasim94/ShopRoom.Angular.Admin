@@ -4,7 +4,7 @@ import { MegamenuColumn } from 'app/shared/interfaces/megamenu-column';
 import { NestedLink } from 'app/shared/interfaces/nested-link';
 
 import { prodtypes } from 'app/shared/dummydatas/productype';
-import { ProductType } from 'app/shared/interfaces/product-type';
+import { ProductType, NewProductType } from 'app/shared/interfaces/product-type';
 import { Product } from 'app/shared/interfaces/product';
 import { isObject } from 'util';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -12,7 +12,6 @@ import { ProductCategoryService } from 'app/shared/services/productCategory.serv
 import { Title } from '@angular/platform-browser';
 
 import { convertStringToSlug } from 'app/shared/helpers/string';
-
 
 @Component({
   selector: 'app-category',
@@ -22,7 +21,7 @@ import { convertStringToSlug } from 'app/shared/helpers/string';
 export class CategoryComponent implements OnInit {
 
   @ViewChild('editModal') editModal : TemplateRef<any>; // Note: TemplateRef
-  selector:Selector = new Selector();
+    selector:Selector = new Selector();
 
     constructor(private modalService: NgbModal, public productCategoryService: ProductCategoryService) { 
 
@@ -38,7 +37,7 @@ export class CategoryComponent implements OnInit {
 
   productCategories: ProductType[] = prodtypes;
   productMainTypes: ProductType[] =[];
-  productType: ProductType[] = [];
+  productTypes: ProductType[] = [];
   nestedLinks: NestedLink[] = [];
 
   selectProductCategory($event, itemId:string){
@@ -59,19 +58,19 @@ export class CategoryComponent implements OnInit {
     this.selector.mainType = this.productMainTypes.find(p => p.id === itemId);
     
     if(this.selector.mainType.child){
-      this.productType = [...this.selector.mainType.child];
+      this.productTypes = [...this.selector.mainType.child];
     }
   }
 
   selectProductType($event, itemId:string){
     this.clearProductTypeListAndSelections();
     $event.target.closest("li").style.backgroundColor ="#e8a39e";
-    this.selector.type = this.productType.find(p => p.id === itemId);
+    this.selector.type = this.productTypes.find(p => p.id === itemId);
   }
 
   private clearCategoryListsAndSelections(){
     document.querySelector('.categoryContainer').querySelectorAll('li').forEach(li => li.style.backgroundColor='');
-    this.productType = [];
+    this.productTypes = [];
     this.productMainTypes = [];
     
     this.selector.category = null;
@@ -81,7 +80,7 @@ export class CategoryComponent implements OnInit {
 
   private clearMainTypeListsAndSelections(){
     document.querySelector('.mainTypeContainer').querySelectorAll('li').forEach(li => li.style.backgroundColor='');
-    this.productType = [];
+    this.productTypes = [];
 
     this.selector.mainType = null;
     this.selector.type = null;
@@ -107,8 +106,10 @@ export class CategoryComponent implements OnInit {
     this.productCategoryModal = new ProductCategoryModal();
 
     this.fillModal(modalType,productType);   
-  
   }
+
+  modalType:ProductCategoryModalType;
+  productType:ProductCategoryType;
 
   private fillModal(modalType:ProductCategoryModalType, productType:ProductCategoryType){
     console.log("fillcalled");
@@ -120,8 +121,10 @@ export class CategoryComponent implements OnInit {
     switch (modalType) {
       case ProductCategoryModalType.New:
         title = "Új "+toReplace+" felvétele!"; 
+        this.productCategoryModal.EditorType = ProductCategoryModalType.New;
         break;
       case ProductCategoryModalType.Edit:
+        this.productCategoryModal.EditorType = ProductCategoryModalType.Edit;
         title = toReplace+" szerkesztése!";
         break;
       default:
@@ -170,10 +173,8 @@ export class CategoryComponent implements OnInit {
     if(!prodType)
       return;
 
-    console.log()
-
-    this.productCategoryModal.Name = prodType.label; 
-    this.productCategoryService.productCategoryModal.controls["Name"].setValue(prodType.label);
+    this.productCategoryModal.Name = prodType.name; 
+    this.productCategoryService.productCategoryModal.controls["Name"].setValue(prodType.name);
     this.productCategoryModal.Slug = prodType.slug;
     this.productCategoryService.productCategoryModal.controls["Slug"].setValue(prodType.slug);
     this.productCategoryModal.Id = prodType.id;
@@ -181,19 +182,56 @@ export class CategoryComponent implements OnInit {
   }
 
   saveModal(){
-    let productType = this.productCategoryModal;
-
+    let productType = this.productCategoryModal.ProductCategoryType;
+    var newProductType : NewProductType = {} as NewProductType;;
     switch (productType) {
       case ProductCategoryType.CategoryType:
-
+            newProductType.id = this.productCategoryModal.id;
+            newProductType.name = this.productCategoryModal.name;
+            newProductType.slug = this.productCategoryModal.slug;
+            newProductType.active = this.productCategoryModal.isActive;
         break;
       case ProductCategoryType.MainType:
-       
+            newProductType.id = this.productCategoryModal.id;
+            newProductType.parentId = this.selector.category.id;
+            newProductType.name = this.productCategoryModal.name;
+            newProductType.slug = this.productCategoryModal.slug;
+            newProductType.active = this.productCategoryModal.isActive;
         break;
       case ProductCategoryType.Type:
-              
+            newProductType.id = this.productCategoryModal.id;
+            newProductType.parentId = this.selector.mainType.id;
+            newProductType.name = this.productCategoryModal.name;
+            newProductType.slug = this.productCategoryModal.slug;
+            newProductType.active = this.productCategoryModal.isActive;
         break;
       default:
+        console.log("invalid ProductCategoryType");
+        break;
+    }
+
+    switch(this.productCategoryModal.EditorType){
+      case ProductCategoryModalType.New:
+        this.productCategoryService.postProductType(newProductType)
+        .then(httpResponse => {
+          
+          console.log("SUCCESS");
+        })
+        .error(err =>{
+          console.log("ERROR");
+        });
+      break;
+      case ProductCategoryModalType.Edit:
+        this.productCategoryService.putProductType(this.productCategoryModal.id,newProductType)
+        .then(httpResponse => {
+          console.log("SUCCESS");
+        })
+        .error(err =>{
+          console.log("ERROR");
+        });
+      break;
+      default:
+        console.log("invalid ProductCategoryModalType");
         break;
     }
   }

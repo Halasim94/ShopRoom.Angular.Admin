@@ -6,3 +6,6 @@
     cursor: pointer;
 }
 
+.category-container{
+    border: 1px solid orangered;
+}
